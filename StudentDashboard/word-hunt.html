@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Hunt Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+      overflow-x: hidden;
+    }
+
+    .game-container {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 650px;
+      width: 100%;
+      max-height: 95vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .grid-container {
+      display: grid;
+      gap: 4px;
+      margin: 20px auto;
+      justify-content: center;
+      max-width: 100%;
+      overflow: visible;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      background: #f0f0f0;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      position: relative;
+    }
+
+    .cell:hover {
+      background: #e0e0ff;
+      transform: scale(1.05);
+    }
+
+    .cell.selected {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-color: #667eea;
+    }
+
+    .cell.found {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border-color: #10b981;
+    }
+
+    .words-list {
+      margin-top: 25px;
+    }
+
+    .words-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .words-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .word-item {
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+      color: #666;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .word-item.found {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border-color: #10b981;
+      text-decoration: line-through;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+
+    .level-complete {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .level-complete.show {
+      display: flex;
+    }
+
+    .level-complete-content {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .level-complete-content h2 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .level-complete-content p {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 600px) {
+      .cell {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        gap: 3px;
+      }
+
+      .game-container {
+        padding: 15px;
+      }
+
+      .grid-container {
+        gap: 3px;
+        margin: 15px auto;
+      }
+
+      .header h1 {
+        font-size: 26px;
+      }
+
+      .stat-box {
+        padding: 10px 15px;
+      }
+
+      .stat-value {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .cell {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+      }
+
+      .grid-container {
+        gap: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="header">
+      <h1>🔍 Word Hunt</h1>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-label">Level</div>
+        <div class="stat-value" id="level">1</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Found</div>
+        <div class="stat-value" id="found">0/5</div>
+      </div>
+    </div>
+
+    <div class="grid-container" id="grid"></div>
+
+    <div class="words-list">
+      <div class="words-title">Find These Words:</div>
+      <div class="words-grid" id="words"></div>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="clearSelection()">Clear</button>
+      <button class="btn btn-primary" onclick="newGame()">New Game</button>
+    </div>
+  </div>
+
+  <div class="level-complete" id="levelComplete">
+    <div class="level-complete-content">
+      <h2>🎉 Level Complete!</h2>
+      <p id="completeMessage">Great job! Ready for the next challenge?</p>
+      <button class="btn btn-primary" onclick="nextLevel()">Next Level</button>
+    </div>
+  </div>
+
+  <script>
+    const LEVELS = [
+      { size: 8, words: ['CALM', 'PEACE', 'MIND', 'REST', 'PLAY'] },
+      { size: 10, words: ['FOCUS', 'RELAX', 'HAPPY', 'SMILE', 'DREAM', 'HOPE'] },
+      { size: 12, words: ['BALANCE', 'HARMONY', 'SERENITY', 'COMFORT', 'WELLNESS', 'CLARITY'] },
+      { size: 14, words: ['MINDFUL', 'GRATEFUL', 'POSITIVE', 'CREATIVE', 'INSPIRED', 'ENERGIZE', 'REFRESH'] },
+      { size: 16, words: ['MEDITATION', 'TRANQUIL', 'PEACEFUL', 'JOYFUL', 'CONTENT', 'BLESSED', 'VIBRANT', 'RADIANT'] }
+    ];
+
+    let currentLevel = 0;
+    let score = 0;
+    let grid = [];
+    let words = [];
+    let foundWords = [];
+    let selectedCells = [];
+    let isSelecting = false;
+
+    function initGame() {
+      const level = LEVELS[currentLevel];
+      const size = level.size;
+      words = level.words;
+      foundWords = [];
+      grid = createEmptyGrid(size);
+      
+      // Place words
+      words.forEach(word => placeWord(word, size));
+      
+      // Fill empty cells
+      fillEmptyCell(size);
+      
+      renderGrid(size);
+      renderWords();
+      updateStats();
+    }
+
+    function createEmptyGrid(size) {
+      return Array(size).fill().map(() => Array(size).fill(''));
+    }
+
+    function placeWord(word, size) {
+      const directions = [
+        [0, 1],   // horizontal
+        [1, 0],   // vertical
+        [1, 1],   // diagonal down-right
+        [-1, 1]   // diagonal up-right
+      ];
+      
+      let placed = false;
+      let attempts = 0;
+      
+      while (!placed && attempts < 100) {
+        const dir = directions[Math.floor(Math.random() * directions.length)];
+        const row = Math.floor(Math.random() * size);
+        const col = Math.floor(Math.random() * size);
+        
+        if (canPlaceWord(word, row, col, dir, size)) {
+          for (let i = 0; i < word.length; i++) {
+            grid[row + dir[0] * i][col + dir[1] * i] = word[i];
+          }
+          placed = true;
+        }
+        attempts++;
+      }
+    }
+
+    function canPlaceWord(word, row, col, dir, size) {
+      for (let i = 0; i < word.length; i++) {
+        const newRow = row + dir[0] * i;
+        const newCol = col + dir[1] * i;
+        
+        if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= size) {
+          return false;
+        }
+        
+        if (grid[newRow][newCol] !== '' && grid[newRow][newCol] !== word[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function fillEmptyCell(size) {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          if (grid[i][j] === '') {
+            grid[i][j] = letters[Math.floor(Math.random() * letters.length)];
+          }
+        }
+      }
+    }
+
+    function renderGrid(size) {
+      const gridContainer = document.getElementById('grid');
+      gridContainer.innerHTML = '';
+      
+      // Calculate cell size based on container width
+      const containerWidth = Math.min(window.innerWidth - 60, 600);
+      const cellSize = Math.floor((containerWidth - (size * 4)) / size);
+      const finalCellSize = Math.min(cellSize, 40);
+      
+      gridContainer.style.gridTemplateColumns = `repeat(${size}, ${finalCellSize}px)`;
+      
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.textContent = grid[i][j];
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.style.width = `${finalCellSize}px`;
+          cell.style.height = `${finalCellSize}px`;
+          cell.style.fontSize = `${Math.max(12, finalCellSize * 0.45)}px`;
+          
+          cell.addEventListener('mousedown', startSelection);
+          cell.addEventListener('mouseenter', continueSelection);
+          cell.addEventListener('mouseup', endSelection);
+          cell.addEventListener('touchstart', handleTouchStart);
+          cell.addEventListener('touchmove', handleTouchMove);
+          cell.addEventListener('touchend', endSelection);
+          
+          gridContainer.appendChild(cell);
+        }
+      }
+    }
+
+    function renderWords() {
+      const wordsContainer = document.getElementById('words');
+      wordsContainer.innerHTML = '';
+      
+      words.forEach(word => {
+        const wordItem = document.createElement('div');
+        wordItem.className = 'word-item';
+        wordItem.textContent = word;
+        if (foundWords.includes(word)) {
+          wordItem.classList.add('found');
+        }
+        wordsContainer.appendChild(wordItem);
+      });
+    }
+
+    function startSelection(e) {
+      e.preventDefault();
+      isSelecting = true;
+      selectedCells = [];
+      clearSelection();
+      const cell = e.target.closest('.cell');
+      if (cell && !cell.classList.contains('found')) {
+        selectedCells.push(cell);
+        cell.classList.add('selected');
+        
+        // Show visual feedback
+        const letter = cell.textContent;
+        showSelectionFeedback(letter);
+      }
+    }
+
+    function continueSelection(e) {
+      if (!isSelecting) return;
+      const cell = e.target.closest('.cell');
+      if (cell && !cell.classList.contains('found') && !selectedCells.includes(cell)) {
+        selectedCells.push(cell);
+        cell.classList.add('selected');
+        
+        // Update visual feedback
+        const word = selectedCells.map(c => c.textContent).join('');
+        showSelectionFeedback(word);
+      }
+    }
+
+    function showSelectionFeedback(text) {
+      // Display the currently selected letters
+      const message = document.getElementById('message');
+      message.textContent = text;
+      message.className = 'message';
+      message.style.display = 'block';
+      message.style.background = '#e0e0ff';
+      message.style.color = '#333';
+    }
+
+    function handleTouchStart(e) {
+      e.preventDefault();
+      isSelecting = true;
+      selectedCells = [];
+      clearSelection();
+      const cell = e.target.closest('.cell');
+      if (cell && !cell.classList.contains('found')) {
+        selectedCells.push(cell);
+        cell.classList.add('selected');
+        
+        // Show visual feedback
+        const letter = cell.textContent;
+        showSelectionFeedback(letter);
+      }
+    }
+
+    function handleTouchMove(e) {
+      if (!isSelecting) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+      const cell = element ? element.closest('.cell') : null;
+      if (cell && !cell.classList.contains('found') && !selectedCells.includes(cell)) {
+        selectedCells.push(cell);
+        cell.classList.add('selected');
+        
+        // Update visual feedback
+        const word = selectedCells.map(c => c.textContent).join('');
+        showSelectionFeedback(word);
+      }
+    }
+
+    function endSelection() {
+      if (!isSelecting) return;
+      isSelecting = false;
+      
+      // Hide selection feedback
+      const message = document.getElementById('message');
+      if (message.style.background === 'rgb(224, 224, 255)') {
+        message.style.display = 'none';
+      }
+      
+      checkWord();
+    }
+
+    function checkWord() {
+      if (selectedCells.length === 0) return;
+      
+      const selectedWord = selectedCells.map(cell => cell.textContent).join('');
+      const reversedWord = selectedWord.split('').reverse().join('');
+      
+      if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+        foundWords.push(selectedWord);
+        selectedCells.forEach(cell => {
+          cell.classList.remove('selected');
+          cell.classList.add('found');
+        });
+        score += selectedWord.length * 10;
+        showMessage('Great! Found: ' + selectedWord, 'success');
+        renderWords();
+        updateStats();
+        
+        if (foundWords.length === words.length) {
+          setTimeout(() => {
+            document.getElementById('levelComplete').classList.add('show');
+          }, 500);
+        }
+      } else if (words.includes(reversedWord) && !foundWords.includes(reversedWord)) {
+        foundWords.push(reversedWord);
+        selectedCells.forEach(cell => {
+          cell.classList.remove('selected');
+          cell.classList.add('found');
+        });
+        score += reversedWord.length * 10;
+        showMessage('Great! Found: ' + reversedWord, 'success');
+        renderWords();
+        updateStats();
+        
+        if (foundWords.length === words.length) {
+          setTimeout(() => {
+            document.getElementById('levelComplete').classList.add('show');
+          }, 500);
+        }
+      } else {
+        clearSelection();
+      }
+    }
+
+    function clearSelection() {
+      selectedCells.forEach(cell => {
+        if (!cell.classList.contains('found')) {
+          cell.classList.remove('selected');
+        }
+      });
+      selectedCells = [];
+      
+      // Hide selection feedback
+      const message = document.getElementById('message');
+      if (message.style.background === 'rgb(224, 224, 255)') {
+        message.style.display = 'none';
+      }
+    }
+
+    function showMessage(text, type) {
+      const message = document.getElementById('message');
+      message.textContent = text;
+      message.className = 'message ' + type;
+      setTimeout(() => {
+        message.className = 'message';
+      }, 2000);
+    }
+
+    function updateStats() {
+      document.getElementById('level').textContent = currentLevel + 1;
+      document.getElementById('score').textContent = score;
+      document.getElementById('found').textContent = `${foundWords.length}/${words.length}`;
+    }
+
+    function newGame() {
+      currentLevel = 0;
+      score = 0;
+      initGame();
+    }
+
+    function nextLevel() {
+      document.getElementById('levelComplete').classList.remove('show');
+      currentLevel++;
+      if (currentLevel >= LEVELS.length) {
+        currentLevel = 0;
+        score = 0;
+        showMessage('🎉 You completed all levels! Starting over...', 'success');
+      }
+      initGame();
+    }
+
+    // Prevent context menu on long press
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const level = LEVELS[currentLevel];
+        renderGrid(level.size);
+      }, 250);
+    });
+
+    // Initialize game on load
+    initGame();
+  </script>
+</body>
+</html>

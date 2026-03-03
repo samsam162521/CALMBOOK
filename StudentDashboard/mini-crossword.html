@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Crossword</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .game-container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      color: #f5576c;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .game-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 25px;
+    }
+
+    .crossword-grid {
+      display: grid;
+      gap: 2px;
+      background: #333;
+      padding: 2px;
+      border-radius: 12px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .cell {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      position: relative;
+      text-transform: uppercase;
+    }
+
+    .cell input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+      background: transparent;
+      outline: none;
+    }
+
+    .cell.black {
+      background: #333;
+      cursor: default;
+    }
+
+    .cell.active {
+      background: #fff3cd;
+      border-color: #f5576c;
+    }
+
+    .cell.correct {
+      background: #d1fae5;
+      border-color: #10b981;
+    }
+
+    .cell.incorrect {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .cell-number {
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      font-size: 10px;
+      font-weight: bold;
+      color: #666;
+    }
+
+    .clues {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .clue-section {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .clue-section h3 {
+      color: #f5576c;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .clue-item {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .clue-item:hover {
+      border-color: #f5576c;
+      transform: translateX(5px);
+    }
+
+    .clue-item.active {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      color: white;
+      border-color: #f5576c;
+    }
+
+    .clue-number {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+
+    .level-complete {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .level-complete.show {
+      display: flex;
+    }
+
+    .level-complete-content {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .level-complete-content h2 {
+      color: #f5576c;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .level-complete-content p {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 900px) {
+      .game-area {
+        grid-template-columns: 1fr;
+      }
+
+      .cell {
+        width: 40px;
+        height: 40px;
+      }
+
+      .cell input {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="header">
+      <h1>📝 Mini Crossword</h1>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-label">Level</div>
+        <div class="stat-value" id="level">1</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Progress</div>
+        <div class="stat-value" id="progress">0%</div>
+      </div>
+    </div>
+
+    <div class="game-area">
+      <div>
+        <div class="crossword-grid" id="grid"></div>
+      </div>
+      
+      <div class="clues">
+        <div class="clue-section">
+          <h3>Across</h3>
+          <div id="acrossClues"></div>
+        </div>
+        <div class="clue-section">
+          <h3>Down</h3>
+          <div id="downClues"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="clearGrid()">Clear</button>
+      <button class="btn btn-secondary" onclick="checkAnswers()">Check</button>
+      <button class="btn btn-primary" onclick="newGame()">New Game</button>
+    </div>
+  </div>
+
+  <div class="level-complete" id="levelComplete">
+    <div class="level-complete-content">
+      <h2>🎉 Level Complete!</h2>
+      <p id="completeMessage">Excellent work! Ready for the next puzzle?</p>
+      <button class="btn btn-primary" onclick="nextLevel()">Next Level</button>
+    </div>
+  </div>
+
+  <script>
+    const LEVELS = [
+      {
+        size: 5,
+        grid: [
+          ['C', 'A', 'L', 'M', 'X'],
+          ['X', 'X', 'I', 'X', 'X'],
+          ['P', 'E', 'A', 'C', 'E'],
+          ['X', 'X', 'K', 'X', 'X'],
+          ['X', 'X', 'E', 'X', 'X']
+        ],
+        clues: {
+          across: [
+            { number: 1, clue: 'Peaceful and quiet', answer: 'CALM', row: 0, col: 0, length: 4 },
+            { number: 3, clue: 'Tranquility and harmony', answer: 'PEACE', row: 2, col: 0, length: 5 }
+          ],
+          down: [
+            { number: 1, clue: 'Opposite of dislike', answer: 'LIKE', row: 0, col: 2, length: 4 }
+          ]
+        }
+      },
+      {
+        size: 6,
+        grid: [
+          ['R', 'E', 'L', 'A', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X'],
+          ['H', 'A', 'P', 'P', 'Y', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X'],
+          ['S', 'M', 'I', 'L', 'E', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X']
+        ],
+        clues: {
+          across: [
+            { number: 1, clue: 'Rest and unwind', answer: 'RELAX', row: 0, col: 0, length: 5 },
+            { number: 2, clue: 'Feeling joyful', answer: 'HAPPY', row: 2, col: 0, length: 5 },
+            { number: 3, clue: 'Facial expression of joy', answer: 'SMILE', row: 4, col: 0, length: 5 }
+          ],
+          down: [
+            { number: 1, clue: 'Opposite of fake', answer: 'REAL', row: 0, col: 0, length: 4 }
+          ]
+        }
+      },
+      {
+        size: 7,
+        grid: [
+          ['M', 'I', 'N', 'D', 'F', 'U', 'L'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['B', 'A', 'L', 'A', 'N', 'C', 'E'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['F', 'O', 'C', 'U', 'S', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X']
+        ],
+        clues: {
+          across: [
+            { number: 1, clue: 'Being aware and present', answer: 'MINDFUL', row: 0, col: 0, length: 7 },
+            { number: 2, clue: 'Equilibrium and stability', answer: 'BALANCE', row: 2, col: 0, length: 7 },
+            { number: 3, clue: 'Concentrate attention', answer: 'FOCUS', row: 4, col: 0, length: 5 }
+          ],
+          down: [
+            { number: 1, clue: 'Thoughts and consciousness', answer: 'MIND', row: 0, col: 0, length: 4 }
+          ]
+        }
+      },
+      {
+        size: 8,
+        grid: [
+          ['G', 'R', 'A', 'T', 'E', 'F', 'U', 'L'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['S', 'E', 'R', 'E', 'N', 'I', 'T', 'Y'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['P', 'O', 'S', 'I', 'T', 'I', 'V', 'E'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X']
+        ],
+        clues: {
+          across: [
+            { number: 1, clue: 'Feeling thankful', answer: 'GRATEFUL', row: 0, col: 0, length: 8 },
+            { number: 2, clue: 'State of calm and peace', answer: 'SERENITY', row: 2, col: 0, length: 8 },
+            { number: 3, clue: 'Optimistic and constructive', answer: 'POSITIVE', row: 4, col: 0, length: 8 }
+          ],
+          down: [
+            { number: 1, clue: 'Magnificent or impressive', answer: 'GREAT', row: 0, col: 0, length: 5 }
+          ]
+        }
+      },
+      {
+        size: 9,
+        grid: [
+          ['M', 'E', 'D', 'I', 'T', 'A', 'T', 'I', 'O', 'N'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['W', 'E', 'L', 'L', 'N', 'E', 'S', 'S', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['H', 'A', 'R', 'M', 'O', 'N', 'Y', 'X', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X']
+        ],
+        clues: {
+          across: [
+            { number: 1, clue: 'Practice of mindfulness', answer: 'MEDITATION', row: 0, col: 0, length: 10 },
+            { number: 2, clue: 'State of good health', answer: 'WELLNESS', row: 2, col: 0, length: 8 },
+            { number: 3, clue: 'Agreement and accord', answer: 'HARMONY', row: 4, col: 0, length: 7 }
+          ],
+          down: [
+            { number: 1, clue: 'Thoughts and brain', answer: 'MIND', row: 0, col: 0, length: 4 }
+          ]
+        }
+      }
+    ];
+
+    let currentLevel = 0;
+    let score = 0;
+    let userGrid = [];
+    let currentClue = null;
+
+    function initGame() {
+      const level = LEVELS[currentLevel];
+      const size = level.size;
+      
+      // Initialize user grid
+      userGrid = Array(size).fill().map(() => Array(size).fill(''));
+      
+      renderGrid(level);
+      renderClues(level);
+      updateStats();
+    }
+
+    function renderGrid(level) {
+      const gridContainer = document.getElementById('grid');
+      gridContainer.innerHTML = '';
+      gridContainer.style.gridTemplateColumns = `repeat(${level.size}, 50px)`;
+      
+      const clueNumbers = {};
+      [...level.clues.across, ...level.clues.down].forEach(clue => {
+        const key = `${clue.row}-${clue.col}`;
+        clueNumbers[key] = clue.number;
+      });
+      
+      for (let i = 0; i < level.size; i++) {
+        for (let j = 0; j < level.size; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          
+          if (level.grid[i][j] === 'X') {
+            cell.classList.add('black');
+          } else {
+            const input = document.createElement('input');
+            input.maxLength = 1;
+            input.dataset.row = i;
+            input.dataset.col = j;
+            input.addEventListener('input', handleInput);
+            input.addEventListener('keydown', handleKeyDown);
+            input.addEventListener('focus', () => highlightClue(i, j, level));
+            
+            const key = `${i}-${j}`;
+            if (clueNumbers[key]) {
+              const number = document.createElement('div');
+              number.className = 'cell-number';
+              number.textContent = clueNumbers[key];
+              cell.appendChild(number);
+            }
+            
+            cell.appendChild(input);
+          }
+          
+          gridContainer.appendChild(cell);
+        }
+      }
+    }
+
+    function renderClues(level) {
+      const acrossContainer = document.getElementById('acrossClues');
+      const downContainer = document.getElementById('downClues');
+      
+      acrossContainer.innerHTML = '';
+      downContainer.innerHTML = '';
+      
+      level.clues.across.forEach(clue => {
+        const clueItem = document.createElement('div');
+        clueItem.className = 'clue-item';
+        clueItem.innerHTML = `<span class="clue-number">${clue.number}.</span>${clue.clue}`;
+        clueItem.onclick = () => focusClue(clue, 'across', level);
+        acrossContainer.appendChild(clueItem);
+      });
+      
+      level.clues.down.forEach(clue => {
+        const clueItem = document.createElement('div');
+        clueItem.className = 'clue-item';
+        clueItem.innerHTML = `<span class="clue-number">${clue.number}.</span>${clue.clue}`;
+        clueItem.onclick = () => focusClue(clue, 'down', level);
+        downContainer.appendChild(clueItem);
+      });
+    }
+
+    function handleInput(e) {
+      const input = e.target;
+      const value = input.value.toUpperCase();
+      
+      if (value.match(/[A-Z]/)) {
+        input.value = value;
+        const row = parseInt(input.dataset.row);
+        const col = parseInt(input.dataset.col);
+        userGrid[row][col] = value;
+        
+        // Move to next cell
+        moveToNextCell(input);
+      } else {
+        input.value = '';
+      }
+    }
+
+    function handleKeyDown(e) {
+      const input = e.target;
+      const row = parseInt(input.dataset.row);
+      const col = parseInt(input.dataset.col);
+      
+      if (e.key === 'Backspace' && !input.value) {
+        moveToPrevCell(input);
+      } else if (e.key === 'ArrowRight') {
+        moveRight(row, col);
+      } else if (e.key === 'ArrowLeft') {
+        moveLeft(row, col);
+      } else if (e.key === 'ArrowDown') {
+        moveDown(row, col);
+      } else if (e.key === 'ArrowUp') {
+        moveUp(row, col);
+      }
+    }
+
+    function moveToNextCell(currentInput) {
+      const row = parseInt(currentInput.dataset.row);
+      const col = parseInt(currentInput.dataset.col);
+      const nextInput = document.querySelector(`input[data-row="${row}"][data-col="${col + 1}"]`);
+      
+      if (nextInput) {
+        nextInput.focus();
+      } else {
+        const nextRowInput = document.querySelector(`input[data-row="${row + 1}"][data-col="0"]`);
+        if (nextRowInput) nextRowInput.focus();
+      }
+    }
+
+    function moveToPrevCell(currentInput) {
+      const row = parseInt(currentInput.dataset.row);
+      const col = parseInt(currentInput.dataset.col);
+      const prevInput = document.querySelector(`input[data-row="${row}"][data-col="${col - 1}"]`);
+      
+      if (prevInput) {
+        prevInput.focus();
+      }
+    }
+
+    function moveRight(row, col) {
+      const nextInput = document.querySelector(`input[data-row="${row}"][data-col="${col + 1}"]`);
+      if (nextInput) nextInput.focus();
+    }
+
+    function moveLeft(row, col) {
+      const prevInput = document.querySelector(`input[data-row="${row}"][data-col="${col - 1}"]`);
+      if (prevInput) prevInput.focus();
+    }
+
+    function moveDown(row, col) {
+      const nextInput = document.querySelector(`input[data-row="${row + 1}"][data-col="${col}"]`);
+      if (nextInput) nextInput.focus();
+    }
+
+    function moveUp(row, col) {
+      const prevInput = document.querySelector(`input[data-row="${row - 1}"][data-col="${col}"]`);
+      if (prevInput) prevInput.focus();
+    }
+
+    function highlightClue(row, col, level) {
+      // Find which clue this cell belongs to
+      document.querySelectorAll('.clue-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('active'));
+    }
+
+    function focusClue(clue, direction, level) {
+      document.querySelectorAll('.clue-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('active'));
+      
+      event.target.closest('.clue-item').classList.add('active');
+      
+      const input = document.querySelector(`input[data-row="${clue.row}"][data-col="${clue.col}"]`);
+      if (input) {
+        input.focus();
+        
+        // Highlight all cells in this clue
+        if (direction === 'across') {
+          for (let i = 0; i < clue.length; i++) {
+            const cell = document.querySelector(`input[data-row="${clue.row}"][data-col="${clue.col + i}"]`);
+            if (cell) cell.parentElement.classList.add('active');
+          }
+        } else {
+          for (let i = 0; i < clue.length; i++) {
+            const cell = document.querySelector(`input[data-row="${clue.row + i}"][data-col="${clue.col}"]`);
+            if (cell) cell.parentElement.classList.add('active');
+          }
+        }
+      }
+    }
+
+    function checkAnswers() {
+      const level = LEVELS[currentLevel];
+      let correct = 0;
+      let total = 0;
+      
+      document.querySelectorAll('.cell input').forEach(input => {
+        const row = parseInt(input.dataset.row);
+        const col = parseInt(input.dataset.col);
+        const userAnswer = input.value.toUpperCase();
+        const correctAnswer = level.grid[row][col];
+        
+        total++;
+        
+        if (userAnswer === correctAnswer) {
+          input.parentElement.classList.add('correct');
+          input.parentElement.classList.remove('incorrect');
+          correct++;
+        } else if (userAnswer) {
+          input.parentElement.classList.add('incorrect');
+          input.parentElement.classList.remove('correct');
+        }
+      });
+      
+      const percentage = Math.round((correct / total) * 100);
+      
+      if (percentage === 100) {
+        score += 100;
+        updateStats();
+        setTimeout(() => {
+          document.getElementById('levelComplete').classList.add('show');
+        }, 500);
+      } else {
+        showMessage(`${percentage}% correct. Keep trying!`, 'success');
+      }
+      
+      updateStats();
+    }
+
+    function clearGrid() {
+      document.querySelectorAll('.cell input').forEach(input => {
+        input.value = '';
+        input.parentElement.classList.remove('correct', 'incorrect');
+      });
+      
+      const level = LEVELS[currentLevel];
+      userGrid = Array(level.size).fill().map(() => Array(level.size).fill(''));
+      updateStats();
+    }
+
+    function showMessage(text, type) {
+      const message = document.getElementById('message');
+      message.textContent = text;
+      message.className = 'message ' + type;
+      setTimeout(() => {
+        message.className = 'message';
+      }, 3000);
+    }
+
+    function updateStats() {
+      const level = LEVELS[currentLevel];
+      let filled = 0;
+      let total = 0;
+      
+      document.querySelectorAll('.cell input').forEach(input => {
+        total++;
+        if (input.value) filled++;
+      });
+      
+      const percentage = total > 0 ? Math.round((filled / total) * 100) : 0;
+      
+      document.getElementById('level').textContent = currentLevel + 1;
+      document.getElementById('score').textContent = score;
+      document.getElementById('progress').textContent = percentage + '%';
+    }
+
+    function newGame() {
+      currentLevel = 0;
+      score = 0;
+      initGame();
+    }
+
+    function nextLevel() {
+      document.getElementById('levelComplete').classList.remove('show');
+      currentLevel++;
+      if (currentLevel >= LEVELS.length) {
+        currentLevel = 0;
+        score = 0;
+        showMessage('🎉 You completed all levels! Starting over...', 'success');
+      }
+      initGame();
+    }
+
+    // Initialize game on load
+    initGame();
+  </script>
+</body>
+</html>
