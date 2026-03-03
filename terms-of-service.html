@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service | CalmBook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #8b4513;
+      --primary-dark: #6b3410;
+      --accent: #a0522d;
+      --bg-gradient: linear-gradient(135deg, #f4e4c1 0%, #e8d4a8 100%);
+      --glass-bg: rgba(244, 228, 193, 0.95);
+      --glass-border: rgba(139, 69, 19, 0.2);
+      --text-main: #4a2511;
+      --text-muted: #8b6f47;
+      --card-shadow: 0 10px 30px rgba(139, 69, 19, 0.15);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.dark-mode {
+      --bg-gradient: linear-gradient(135deg, #2a1810 0%, #1a0f08 50%, #2a1810 100%);
+      --glass-bg: rgba(74, 37, 17, 0.92);
+      --glass-border: rgba(139, 69, 19, 0.3);
+      --text-main: #f4e4c1;
+      --text-muted: #c9a876;
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      line-height: 1.6;
+      position: relative;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .container { 
+      max-width: 900px; 
+      margin: 0 auto; 
+      padding: 60px 24px 80px; 
+      position: relative; 
+      z-index: 1; 
+    }
+    
+    .header { 
+      text-align: center; 
+      margin-bottom: 60px;
+      animation: fadeIn 0.6s ease;
+    }
+    
+    .header h1 { 
+      font-size: 48px; 
+      color: var(--primary-dark); 
+      margin-bottom: 16px;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #f4e4c1;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 40px;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+      border: 2px solid rgba(139, 69, 19, 0.3);
+    }
+    
+    .back-btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+    }
+    
+    .content-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 48px;
+      box-shadow: var(--card-shadow);
+      animation: slideUp 0.6s ease;
+    }
+    
+    .content-card h2 { 
+      font-size: 32px; 
+      color: var(--primary-dark); 
+      margin-bottom: 24px;
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 16px;
+    }
+    
+    .content-card h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+    
+    .content-card p { 
+      font-size: 18px; 
+      color: var(--text-muted); 
+      line-height: 1.8; 
+      margin-bottom: 20px;
+    }
+    
+    .content-card ul { 
+      margin-left: 24px; 
+      margin-top: 20px;
+      list-style: none;
+    }
+    
+    .content-card li { 
+      font-size: 18px; 
+      color: var(--text-muted); 
+      margin-bottom: 16px;
+      padding-left: 32px;
+      position: relative;
+    }
+    
+    .content-card li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .alert-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 32px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    
+    .alert-box i {
+      color: #dc2626;
+      font-size: 24px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .alert-box p { 
+      color: #991b1b; 
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1001;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-toggle i {
+      font-size: 20px;
+      color: var(--primary);
+      transition: var(--transition);
+    }
+
+    body.dark-mode .theme-toggle i {
+      color: #fbbf24;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 40px 20px 60px; }
+      .header h1 { font-size: 36px; }
+      .content-card { padding: 32px 24px; }
+      .content-card h2 { font-size: 26px; }
+      .content-card p, .content-card li { font-size: 16px; }
+      .alert-box { 
+        flex-direction: column;
+        padding: 20px;
+      }
+      .alert-box i { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div class="container">
+    <a href="/index.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+    
+    <div class="header">
+      <h1>Terms of Service</h1>
+    </div>
+
+    <div class="content-card">
+      <h2>By Using CalmBook, You Agree To</h2>
+      
+      <ul>
+        <li>Provide accurate account information</li>
+        <li>Use the platform respectfully and responsibly</li>
+        <li>Not misuse or attempt to disrupt our services</li>
+        <li>Maintain confidentiality of your account credentials</li>
+        <li>Respect the professional boundaries with counselors</li>
+      </ul>
+      
+      <div class="alert-box">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>CalmBook is not a crisis service. If you are experiencing a mental health emergency, please contact local emergency services immediately or call a crisis hotline.</p>
+      </div>
+      
+      <p style="margin-top: 32px;">We reserve the right to suspend or terminate accounts that violate our terms of service. Our goal is to maintain a safe and supportive environment for all users.</p>
+      
+      <p>By continuing to use CalmBook, you acknowledge that you have read, understood, and agree to be bound by these terms.</p>
+    </div>
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = themeToggle.querySelector('i');
+    
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeIcon.classList.remove('fa-moon');
+      themeIcon.classList.add('fa-sun');
+    }
+
+    themeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      
+      if (document.body.classList.contains('dark-mode')) {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  </script>
+</body>
+</html>
