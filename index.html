@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CalmBook | Professional Counselling</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #8b4513;
+      --primary-dark: #6b3410;
+      --accent: #a0522d;
+      --bg-gradient: linear-gradient(135deg, #f4e4c1 0%, #e8d4a8 100%);
+      --glass-bg: rgba(244, 228, 193, 0.95);
+      --glass-border: rgba(139, 69, 19, 0.2);
+      --text-main: #4a2511;
+      --text-muted: #8b6f47;
+      --danger: #ef4444;
+      --success: #10b981;
+      --card-shadow: 0 25px 50px -12px rgba(139, 69, 19, 0.3);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dark Mode Variables */
+    body.dark-mode {
+      --bg-gradient: linear-gradient(135deg, #2a1810 0%, #1a0f08 50%, #2a1810 100%);
+      --glass-bg: rgba(74, 37, 17, 0.85);
+      --glass-border: rgba(139, 69, 19, 0.3);
+      --text-main: #f4e4c1;
+      --text-muted: #c9a876;
+      --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    body.dark-mode .orb-1 { background: rgba(139, 69, 19, 0.3); }
+    body.dark-mode .orb-2 { background: rgba(160, 82, 45, 0.3); }
+    body.dark-mode .orb-3 { background: rgba(139, 69, 19, 0.2); }
+
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+      position: relative;
+    }
+    
+    /* Parchment texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(139, 69, 19, 0.02) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 24px;
+    }
+
+    /* Animated Background Orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      animation: float 10s infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(139, 69, 19, 0.3); }
+    .orb-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: rgba(160, 82, 45, 0.3); animation-delay: 2s; }
+    .orb-3 { top: 40%; left: 50%; width: 300px; height: 300px; background: rgba(139, 69, 19, 0.2); animation-delay: 4s; }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, -30px) scale(1.1); }
+    }
+
+    /* Scroll animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      z-index: 1;
+      position: relative;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* —— HEADER —— */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      border-bottom: 2px solid var(--glass-border);
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      z-index: 1001; /* Above menu */
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    }
+
+    .logo i { color: #f4e4c1; font-size: 18px; }
+
+    .brand-text { display: flex; flex-direction: column; }
+
+    .brand h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--primary);
+      font-family: 'Georgia', serif;
+    }
+
+    .brand p {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-family: 'Georgia', serif;
+    }
+
+    nav {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 8px 0;
+      transition: var(--transition);
+      font-size: 14px;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: var(--transition);
+    }
+
+    .nav-link:hover { color: var(--text-main); }
+
+    .login-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #f4e4c1;
+      text-decoration: none;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(139, 69, 19, 0.4);
+      white-space: nowrap;
+      font-family: 'Georgia', serif;
+      border: 2px solid rgba(139, 69, 19, 0.3);
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 69, 19, 0.5);
+    }
+    
+    /* Avatar style for logged-in user */
+    .login-btn.avatar-only {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border: 3px solid rgba(139, 69, 19, 0.3);
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1001;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-toggle i {
+      font-size: 20px;
+      color: var(--primary);
+      transition: var(--transition);
+    }
+
+    body.dark-mode .theme-toggle i {
+      color: #fbbf24;
+    }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none; /* Hidden on desktop */
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      z-index: 1002;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background-color: var(--text-main);
+      margin: 5px 0;
+      transition: var(--transition);
+      border-radius: 2px;
+    }
+
+    /* —— HERO —— */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      padding: 100px 0 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-left { animation: fadeInLeft 1s ease; }
+
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(139, 69, 19, 0.2);
+      border: 2px solid rgba(139, 69, 19, 0.3);
+      border-radius: 50px;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      backdrop-filter: blur(4px);
+      font-family: 'Georgia', serif;
+    }
+
+    .hero-left h2 {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+      color: var(--primary-dark);
+      font-family: 'Georgia', serif;
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      line-height: 1.7;
+      font-family: 'Georgia', serif;
+    }
+
+    /* CTA Buttons */
+    .cta-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .cta {
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex; /* Changed to inline-flex for better text handling */
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      text-decoration: none;
+      text-align: center;
+      font-family: 'Georgia', serif;
+    }
+
+    .cta.primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #f4e4c1;
+      box-shadow: 0 8px 20px rgba(139, 69, 19, 0.4);
+      border: 2px solid rgba(139, 69, 19, 0.3);
+    }
+
+    .cta.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(139, 69, 19, 0.5);
+    }
+
+    .cta.secondary {
+      background: rgba(139, 69, 19, 0.15);
+      color: var(--primary-dark);
+      border: 2px solid rgba(139, 69, 19, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    .cta.secondary:hover { 
+      background: rgba(139, 69, 19, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .hero-right {
+      position: relative;
+      animation: fadeInRight 1s ease;
+    }
+
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 500px;
+      background: linear-gradient(135deg, #e8d4a8 0%, #d4c4a0 100%);
+      border-radius: 32px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      border: 3px solid var(--glass-border);
+    }
+
+    .hero-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://www.sti.edu/cms/images/school/all/bacoor.jpg') center/cover;
+      opacity: 0.9;
+    }
+
+    .floating-card {
+      position: absolute;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid var(--glass-border);
+      animation: float 6s ease-in-out infinite;
+      color: var(--text-main);
+    }
+
+    .card-1 { top: 40px; right: -20px; width: 160px; animation-delay: 0s; }
+    .card-2 { bottom: 40px; left: -20px; width: 180px; animation-delay: 2s; }
+    .card-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; animation-delay: 4s; }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
+    }
+
+    .card-icon i { color: #f4e4c1; font-size: 14px; }
+
+    .card-title { 
+      font-weight: 600; 
+      margin-bottom: 2px; 
+      font-size: 14px;
+      font-family: 'Georgia', serif;
+    }
+    .card-text { 
+      font-size: 12px; 
+      color: var(--text-muted);
+      font-family: 'Georgia', serif;
+    }
+
+    /* —— SECTIONS —— */
+    .section {
+      padding: 80px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+      color: var(--primary-dark);
+      font-family: 'Georgia', serif;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 60px;
+      font-size: 16px;
+      padding: 0 20px;
+      font-family: 'Georgia', serif;
+    }
+
+    /* —— FEATURES —— */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: var(--transition);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .feature:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--card-shadow);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 16px rgba(139, 69, 19, 0.3);
+    }
+
+    .feature-icon i { font-size: 24px; color: #f4e4c1; }
+
+    .feature h4 { 
+      font-size: 18px; 
+      margin-bottom: 12px; 
+      font-weight: 700; 
+      color: var(--text-main);
+      font-family: 'Georgia', serif;
+    }
+    .feature p { 
+      color: var(--text-muted); 
+      line-height: 1.6; 
+      font-size: 14px;
+      font-family: 'Georgia', serif;
+    }
+
+    /* —— STEPS —— */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      position: relative;
+    }
+
+    /* Hide connector line on smaller screens logic handled in media query */
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 16.66%;
+      right: 16.66%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .step-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px;
+      position: relative;
+      z-index: 1;
+      transition: var(--transition);
+      border: 1px solid var(--glass-border);
+      text-align: center;
+    }
+
+    .step-card:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .step-number {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: #f4e4c1;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 16px rgba(139, 69, 19, 0.3);
+      font-family: 'Georgia', serif;
+    }
+
+    .step-card h4 { 
+      font-size: 18px; 
+      margin-bottom: 12px; 
+      font-weight: 700; 
+      color: var(--text-main);
+      font-family: 'Georgia', serif;
+    }
+    .step-card p { 
+      color: var(--text-muted); 
+      line-height: 1.6; 
+      font-size: 14px;
+      font-family: 'Georgia', serif;
+    }
+
+    /* —— TESTIMONIALS —— */
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px;
+      position: relative;
+      border: 1px solid var(--glass-border);
+      transition: var(--transition);
+    }
+
+    .testimonial-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.95); }
+
+    .quote-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 40px;
+      color: rgba(139, 69, 19, 0.15);
+    }
+
+    .testimonial-text {
+      font-style: italic;
+      font-size: 15px;
+      margin-bottom: 24px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-family: 'Georgia', serif;
+    }
+
+    .testimonial-author { display: flex; align-items: center; gap: 16px; }
+
+    .author-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .author-info { display: flex; flex-direction: column; }
+    .author-name { 
+      font-weight: 600; 
+      color: var(--text-main);
+      font-family: 'Georgia', serif;
+    }
+    .author-title { 
+      font-size: 13px; 
+      color: var(--text-muted);
+      font-family: 'Georgia', serif;
+    }
+
+    /* —— CTA SECTION —— */
+    .cta-section {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 60px;
+      text-align: center;
+      color: var(--text-main);
+      margin-bottom: 80px;
+      border: 1px solid var(--glass-border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section h2 {
+      font-size: 32px;
+      margin-bottom: 16px;
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-family: 'Georgia', serif;
+    }
+
+    .cta-section p {
+      font-size: 16px;
+      margin-bottom: 32px;
+      color: var(--text-muted);
+      font-family: 'Georgia', serif;
+    }
+
+    .cta-section .cta-btn-main {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #f4e4c1;
+      font-size: 16px;
+      padding: 14px 32px;
+      display: inline-flex;
+      box-shadow: 0 8px 20px rgba(139, 69, 19, 0.3);
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+      font-family: 'Georgia', serif;
+      border: 2px solid rgba(139, 69, 19, 0.3);
+    }
+    
+    .cta-section .cta-btn-main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(139, 69, 19, 0.4);
+    }
+
+    /* —— FOOTER —— */
+    footer {
+      background: rgba(139, 69, 19, 0.1);
+      backdrop-filter: blur(20px);
+      padding: 40px 24px 20px;
+      border-top: 2px solid var(--glass-border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .footer-column h4 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+      font-weight: 600;
+      font-family: 'Georgia', serif;
+    }
+
+    .footer-column p {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.5;
+      font-family: 'Georgia', serif;
+    }
+
+    .footer-column ul { list-style: none; }
+
+    .footer-column ul li { margin-bottom: 8px; }
+
+    .footer-column ul li a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 13px;
+      font-family: 'Georgia', serif;
+    }
+
+    .footer-column ul li a:hover { color: var(--primary); }
+
+    .social-links { display: flex; gap: 8px; margin-top: 12px; }
+
+    .social-link {
+      width: 32px;
+      height: 32px;
+      background: rgba(139, 69, 19, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      transition: var(--transition);
+      border: 1px solid rgba(139, 69, 19, 0.3);
+      font-size: 14px;
+    }
+
+    .social-link:hover {
+      background: var(--primary);
+      color: #f4e4c1;
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(139, 69, 19, 0.2);
+      padding-top: 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      max-width: 1200px;
+      margin: 0 auto;
+      font-family: 'Georgia', serif;
+    }
+
+    .footer-bottom a { 
+      color: var(--primary); 
+      text-decoration: none;
+      font-family: 'Georgia', serif;
+    }
+    .footer-bottom a:hover { text-decoration: underline; }
+
+    /* ========================================= */
+    /* RESPONSIVE TABLETS */
+    /* ========================================= */
+    @media (max-width: 992px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+      .hero-left h2 { font-size: 40px; }
+      .hero-right { max-width: 600px; margin: 0 auto; }
+      
+      .features, .steps, .testimonial-grid { grid-template-columns: 1fr; }
+      
+      /* Hide connector line on tablet/mobile */
+      .steps::before { display: none; }
+      
+      .footer-content { grid-template-columns: 1fr 1fr; gap: 30px; }
+      .cta-section { padding: 40px 24px; }
+    }
+
+    /* ========================================= */
+    /* RESPONSIVE MOBILE */
+    /* ========================================= */
+    @media (max-width: 768px) {
+      .container { padding: 0 20px; }
+      
+      /* Header Mobile */
+      header { padding: 12px 20px; }
+      
+      .menu-toggle { display: block; }
+      
+      /* Mobile Navigation Overlay */
+      nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 100px 30px 30px;
+        box-shadow: -5px 0 30px rgba(139, 69, 19, 0.2);
+        transition: right 0.3s ease;
+        z-index: 999;
+        gap: 0; /* Reset gap */
+        border-left: 2px solid var(--glass-border);
+      }
+      
+      nav.active { right: 0; }
+      
+      .nav-link {
+        width: 100%;
+        text-align: left;
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(139, 69, 19, 0.1);
+        color: var(--text-main);
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        font-family: 'Georgia', serif;
+      }
+      
+      .login-btn {
+        margin-top: 30px;
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+      }
+
+      /* Hero Mobile */
+      .hero { 
+        padding: 40px 0; 
+        gap: 30px;
+      }
+      
+      .hero-left h2 { 
+        font-size: 32px; 
+        line-height: 1.2;
+      }
+      
+      .lead { font-size: 15px; }
+      
+      .eyebrow { 
+          font-size: 12px; 
+          margin-bottom: 16px;
+      }
+
+      /* Mobile Button Organization */
+      .cta-row {
+        flex-direction: column; /* Stack buttons vertically */
+        width: 100%;
+        gap: 12px;
+      }
+      
+      .cta {
+        width: 100%; /* Full width buttons */
+        padding: 14px 20px; /* Nice touch area */
+        font-size: 15px;
+      }
+
+      /* Hero Image Mobile */
+      .hero-right { width: 100%; }
+      .hero-image { 
+          height: 220px; 
+          border-radius: 20px; 
+      }
+      .floating-card { display: none; } /* Hide for clean UI */
+
+      /* Sections Mobile */
+      .section { padding: 50px 0; }
+      .section-title { font-size: 26px; }
+      .section-subtitle { margin-bottom: 30px; font-size: 14px; padding: 0 10px; }
+      
+      .feature, .step-card, .testimonial-card { 
+          padding: 24px; 
+          border-radius: 20px;
+      }
+      
+      .feature-icon, .step-number { 
+          width: 56px; 
+          height: 56px; 
+          margin-bottom: 16px;
+      }
+      
+      .feature h4, .step-card h4 { font-size: 17px; }
+      .feature p, .step-card p { font-size: 13px; }
+
+      /* CTA Section Mobile */
+      .cta-section { 
+          padding: 40px 20px; 
+          border-radius: 24px;
+          margin-bottom: 50px;
+      }
+      .cta-section h2 { font-size: 24px; }
+      .cta-section p { font-size: 15px; }
+
+      /* Footer Mobile */
+      footer { padding: 30px 20px 20px; }
+      .footer-content { 
+          grid-template-columns: 1fr; 
+          text-align: center; 
+          gap: 24px;
+      }
+      .social-links { justify-content: center; }
+      .footer-column ul li a { display: block; padding: 4px 0; }
+      .footer-column h4 { margin-bottom: 10px; }
+      .footer-column p { font-size: 12px; }
+      .footer-bottom { font-size: 11px; padding-top: 16px; }
+    }
+
+    @media (max-width: 400px) {
+        .brand h1 { font-size: 16px; }
+        .brand p { display: none; } /* Hide tagline on very small screens */
+        .hero-left h2 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Background Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div class="container">
+    <header>
+      <a class="brand" href="#hero">
+        <div class="logo">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="brand-text">
+          <h1>CalmBook</h1>
+          <p>Professional Counselling</p>
+        </div>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav id="navMenu">
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#how-it-works">How It Works</a>
+        <a class="nav-link" href="#testimonials">Testimonials</a>
+        <a class="login-btn" href="login/login.html">
+          <i class="fas fa-user"></i>
+          Log in
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="hero" class="hero">
+        <div class="hero-left">
+          <div class="eyebrow fade-in">
+            <i class="fas fa-check-circle"></i>
+            Secure • Private • Professional
+          </div>
+
+          <h2>Find Peace of Mind with Professional Counselling</h2>
+
+          <p class="lead">
+            CalmBook connects you with licensed therapists for confidential online sessions. 
+            Book appointments that fit your schedule and start your journey to mental wellness today.
+          </p>
+
+          <div class="cta-row">
+            <a class="cta primary" href="user-dashboard.html">
+              <i class="fas fa-calendar-check"></i>
+              Book a session
+            </a>
+            <a class="cta secondary" href="#how-it-works">
+              <i class="fas fa-play-circle"></i>
+              Learn more
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="hero-image fade-in">
+            <!-- Floating cards hidden on mobile for cleanliness -->
+            <div class="floating-card card-1">
+              <div class="card-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="card-title">100% Confidential</div>
+              <div class="card-text">Your privacy is our priority</div>
+            </div>
+            <div class="floating-card card-2">
+              <div class="card-icon">
+                <i class="fas fa-user-md"></i>
+              </div>
+              <div class="card-title">Expert Therapists</div>
+              <div class="card-text">Licensed professionals</div>
+            </div>
+            <div class="floating-card card-3">
+              <div class="card-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="card-title">Flexible Scheduling</div>
+              <div class="card-text">Book sessions that work for you</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <h2 class="section-title fade-in">Why Choose CalmBook?</h2>
+        <p class="section-subtitle fade-in">Experience a new standard in mental health support</p>
+        
+        <div class="features">
+          <article class="feature fade-in">
+            <div class="feature-icon">
+              <i class="fas fa-lock"></i>
+            </div>
+            <h4>Private & Secure</h4>
+            <p>End-to-end encrypted sessions, HIPAA-compliant data handling, and complete confidentiality for your peace of mind.</p>
+          </article>
+          <article class="feature fade-in">
+            <div class="feature-icon">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h4>Effortless Scheduling</h4>
+            <p>Real-time availability, calendar sync, and automated reminders make booking and attending sessions seamless.</p>
+          </article>
+          <article class="feature fade-in">
+            <div class="feature-icon">
+              <i class="fas fa-certificate"></i>
+            </div>
+            <h4>Verified Professionals</h4>
+            <p>Every therapist is licensed, background-checked, and specializes in evidence-based therapeutic approaches.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="section">
+        <h2 class="section-title fade-in">How It Works</h2>
+        <p class="section-subtitle fade-in">Start your mental wellness journey in three simple steps</p>
+        
+        <div class="steps">
+          <div class="step-card fade-in">
+            <div class="step-number">1</div>
+            <h4>Find Your Therapist</h4>
+            <p>Browse profiles, specialties, and reviews to find a therapist who matches your needs and preferences.</p>
+          </div>
+          <div class="step-card fade-in">
+            <div class="step-number">2</div>
+            <h4>Book Your Session</h4>
+            <p>Select a time that fits your schedule and book instantly. No back-and-forth emails or phone calls needed.</p>
+          </div>
+          <div class="step-card fade-in">
+            <div class="step-number">3</div>
+            <h4>Connect & Heal</h4>
+            <p>Join your secure video session from any device and begin your journey toward better mental health.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonials" class="section">
+        <h2 class="section-title fade-in">What Our Clients Say</h2>
+        <p class="section-subtitle fade-in">Real stories from people who found support through CalmBook</p>
+        
+        <div class="testimonial-grid">
+          <div class="testimonial-card fade-in">
+            <i class="fas fa-quote-right quote-icon"></i>
+            <p class="testimonial-text">
+              "The platform is incredibly easy to use, and finding a therapist who understood my needs was seamless. I felt supported from day one."
+            </p>
+            <div class="testimonial-author">
+              <div class="author-avatar">SJ</div>
+              <div class="author-info">
+                <div class="author-name">Sammmy J.</div>
+                <div class="author-title">Student</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card fade-in">
+            <i class="fas fa-quote-right quote-icon"></i>
+            <p class="testimonial-text">
+              "Finally, a counselling service that fits my schedule. The chats quality is excellent, and the confidentiality gives me peace of mind."
+            </p>
+            <div class="testimonial-author">
+              <div class="author-avatar">MC</div>
+              <div class="author-info">
+                <div class="author-name">Sammy C.</div>
+                <div class="author-title">Student</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section fade-in">
+        <h2>Ready to Start Your Journey?</h2>
+        <p>Join thousands who have found peace of mind through CalmBook</p>
+        <a class="cta-btn-main" href="/StudentDashboard/student.html">
+          Book Your First Session
+        </a>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-column">
+          <h4>CalmBook</h4>
+          <p>Professional online counselling platform connecting you with licensed therapists for mental wellness.</p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="/features.html">Features</a></li>
+            <li><a href="/how-it-works.html">How It Works</a></li>
+            <li><a href="/faq.html">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about.html">About Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/contact.html">Contact Us</a></li>
+            <li><a href="/help-center.html">Help Center</a></li>
+            <li><a href="/privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="/terms-of-service.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 CalmBook. All rights reserved. | <a href="/privacy-policy.html">Privacy Policy</a> | <a href="/terms-of-service.html">Terms of Use</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZm3g6Y2CVnzOCHxkcR9A8LmEbx9z3vlY",
+      authDomain: "professional-login-system.firebaseapp.com",
+      projectId: "professional-login-system",
+      storageBucket: "professional-login-system.firebasestorage.app",
+      messagingSenderId: "702832950964",
+      appId: "1:702832950964:web:afec8b899fe4af62a7e1e1",
+      measurementId: "G-MSJJSH9CD7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    // Firebase Auth State Check - Redirect if already logged in
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        // User is logged in, check their role and redirect
+        try {
+          const doc = await firebase.firestore().collection('users').doc(user.uid).get();
+          if (doc.exists) {
+            const userRole = doc.data().role;
+            const userName = doc.data().fullName || 'User';
+            const userInitial = userName.charAt(0).toUpperCase();
+            
+            // Update login button to show only avatar
+            const loginBtn = document.querySelector('.login-btn');
+            if (loginBtn) {
+              loginBtn.classList.add('avatar-only');
+              loginBtn.innerHTML = userInitial;
+              loginBtn.title = `${userName} - Go to Dashboard`;
+              loginBtn.onclick = (e) => {
+                e.preventDefault();
+                redirectToDashboard(userRole);
+              };
+            }
+            
+            // Update hero CTA button
+            const heroCTA = document.querySelector('.cta.primary');
+            if (heroCTA) {
+              heroCTA.innerHTML = '<i class="fas fa-tachometer-alt"></i> Go to Dashboard';
+              heroCTA.onclick = (e) => {
+                e.preventDefault();
+                redirectToDashboard(userRole);
+              };
+            }
+            
+            // Update bottom CTA button
+            const bottomCTA = document.querySelector('.cta-btn-main');
+            if (bottomCTA) {
+              bottomCTA.textContent = 'Go to Dashboard';
+              bottomCTA.onclick = (e) => {
+                e.preventDefault();
+                redirectToDashboard(userRole);
+              };
+            }
+          }
+        } catch (error) {
+          console.error('Error checking user role:', error);
+        }
+      }
+    });
+    
+    // Helper function to redirect based on role
+    function redirectToDashboard(role) {
+      if (role === 'head') {
+        window.location.href = '/headDashboard/head.html';
+      } else if (role === 'admin') {
+        window.location.href = '/adminDashboard/admin.html';
+      } else {
+        window.location.href = '/StudentDashboard/student.html';
+      }
+    }
+
+    // Mobile menu toggle
+    document.getElementById('menuToggle').addEventListener('click', function() {
+      document.getElementById('navMenu').classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function() {
+        document.getElementById('navMenu').classList.remove('active');
+      });
+    });
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = themeToggle.querySelector('i');
+    
+    // Check for saved theme preference or default to light mode
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeIcon.classList.remove('fa-moon');
+      themeIcon.classList.add('fa-sun');
+    }
+
+    themeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      
+      // Update icon
+      if (document.body.classList.contains('dark-mode')) {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all fade-in elements
+    document.addEventListener('DOMContentLoaded', () => {
+      const fadeElements = document.querySelectorAll('.fade-in');
+      fadeElements.forEach(el => observer.observe(el));
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
